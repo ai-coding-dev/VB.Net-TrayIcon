@@ -72,11 +72,11 @@ Namespace TrayIcon
             Dim loadItems = LoadFolder()
 
             'Language Integrated Query
-            Dim groupedItems = loadItems.GroupBy(Function(i) i.MainMenu).ToDictionary(
-                Function(g) g.Key,
-                Function(g) g.GroupBy(Function(i) i.SubMenu).ToDictionary(
-                    Function(sg) sg.Key,
-                    Function(sg) sg.ToList()))
+            Dim groupedItems = loadItems.GroupBy(Function(x) x.MainMenu).ToDictionary(
+                Function(y) y.Key,
+                Function(y) y.GroupBy(Function(x) x.SubMenu).ToDictionary(
+                    Function(z) z.Key,
+                    Function(z) z.ToList()))
 
             For Each mainMenuKey In groupedItems.Keys
                 Dim mainMenuItem As ToolStripMenuItem = Nothing
