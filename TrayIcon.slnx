@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TrayIcon.vbproj" /> 
+  <Folder Name="/Solution Folder/">
+    <File Path="TrayIcon.vb" />
+  </Folder>
+</Solution>
