@@ -1,50 +1,29 @@
+# Tray Icon Tool (TrayIcon)
 
----
+This is a VB.NET-based Windows tray application. It displays a tray icon on startup and dynamically builds menu items from CSV files.
 
-# 🇺🇸 **README.md（English Version）**
+## Features
 
-```markdown
-# TrayIcon
+- Load menu structure from CSV files
+- Supports 3-level hierarchy: Main Menu / Submenu / Command
+- Menu item actions:
+  - Copy content to clipboard
+  - Ctrl + Left Click: Open path or URL
+  - Ctrl + Right Click: Send content as keystrokes (SendKeys)
 
-TrayIcon is a lightweight Windows tray utility that dynamically generates menu items based on CSV files.  
-Left-click copies text to the clipboard, and right-click launches URLs or file paths, making daily workflow more efficient.
+## How to Use
 
----
+1. Place the compiled EXE in any folder.
+2. Place one or more `.csv` files in the same folder or subfolders.
+3. Each CSV file should follow this format:
 
-## ✅ Features
+Main Menu,Submenu,Display Name,Content
 
-- Automatically generates tray menus from CSV files
-- Supports a 3-level structure: Main Menu → Sub Menu → Items
-- Left-click: Copy `ContentItem` to clipboard
-- Right-click: Execute `ContentItem` using the default application
-- “Reload” menu updates changes instantly
-- Lightweight and always running in the system tray
 
----
+4. When launched, the tray icon will appear in the system tray.
+5. Right-click the icon to reload the menu or exit the application.
 
-## ✅ Requirements
+## Notes
 
-- Windows 10 / 11
-- .NET Framework / .NET Runtime (depending on project settings)
-- CSV files (UTF-8 recommended)
-
----
-
-## ✅ CSV Format
-
-TrayIcon reads CSV files with the following 4-column structure:
-
-| Column | Description |
-|--------|-------------|
-| MainMenu | Main menu name |
-| SubMenu | Sub menu name (optional) |
-| DisplayItem | Text displayed in the menu |
-| ContentItem | Value to copy or execute |
-
-### ✅ Sample CSV
-
-```csv
-Tools,Editors,Open Notepad,notepad.exe
-Tools,Editors,Open VSCode,"C:\Program Files\Microsoft VS Code\Code.exe"
-Links,Search,Google,https://www.google.com
-Links,Search,Bing,https://www.bing.com
+- CSV files must be UTF-8 encoded.
+- The Content field must not be empty.
