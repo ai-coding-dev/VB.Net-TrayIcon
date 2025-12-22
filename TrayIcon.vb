@@ -1,5 +1,6 @@
-Imports System.Drawing
+﻿Imports System.Drawing
 Imports System.IO
+Imports System.Text
 Imports System.Windows.Forms
 Imports Microsoft.VisualBasic.FileIO
 
@@ -49,22 +50,57 @@ Namespace TrayIcon
             Application.Exit()
         End Sub
 
-        Private Sub OnCommandMenuClick(sender As Object, e As MouseEventArgs, item As TrayMenuItem)
+        Private Async Sub OnCommandMenuClick(sender As Object, e As MouseEventArgs, item As TrayMenuItem)
             Dim ErrorMessage As String = ""
             Try
                 If Not String.IsNullOrEmpty(item.ContentItem) Then
-                    If Control.ModifierKeys.HasFlag(Keys.Control) OrElse e.Button = MouseButtons.Right Then
-                        ErrorMessage = "Failed to open: "
-                        Process.Start(New ProcessStartInfo(item.ContentItem) With {.UseShellExecute = True})
-                    ElseIf e.Button = MouseButtons.Left Then
-                        ErrorMessage = "Failed to copy to clipboard: "
-                        Clipboard.SetText(item.ContentItem)
+                    ErrorMessage = "Failed to copy to clipboard: "
+                    Clipboard.SetText(item.ContentItem)
+                    If Control.ModifierKeys.HasFlag(Keys.Control) Then
+                        If e.Button = MouseButtons.Left Then
+                            ErrorMessage = "Failed to open: "
+                            Process.Start(New ProcessStartInfo(item.ContentItem) With {.UseShellExecute = True})
+                        ElseIf e.Button = MouseButtons.Right Then
+                            ErrorMessage = "Failed to sendkey: "
+                            Dim hWnd = FindTopmostValidWindow()
+                            If hWnd <> IntPtr.Zero Then
+                                SetForegroundWindow(hWnd)
+                                Await Task.Delay(1000)
+                                SendKeys.SendWait(item.ContentItem)
+                            End If
+                        End If
                     End If
                 End If
             Catch ex As Exception
                 MessageBox.Show(ErrorMessage & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Sub
+
+        Public Shared Function FindTopmostValidWindow() As IntPtr
+            Dim currentPid = Process.GetCurrentProcess().Id
+            Dim result As IntPtr = IntPtr.Zero
+
+            EnumWindows(Function(hWnd, lParam)
+                            If Not IsWindowVisible(hWnd) Then Return True
+
+                            Dim className As New StringBuilder(256)
+                            GetClassName(hWnd, className, className.Capacity)
+                            If className.ToString() = "Shell_TrayWnd" Then Return True
+
+                            Dim pid As Integer
+                            GetWindowThreadProcessId(hWnd, pid)
+                            If pid = currentPid Then Return True
+
+                            Dim title As New StringBuilder(256)
+                            GetWindowText(hWnd, title, title.Capacity)
+                            If String.IsNullOrWhiteSpace(title.ToString()) Then Return True
+
+                            result = hWnd
+                            Return False
+                        End Function, IntPtr.Zero)
+
+            Return result
+        End Function
 
         Private Sub ReloadTrayMenu()
             _trayMenu.Items.Clear()
@@ -73,10 +109,10 @@ Namespace TrayIcon
 
             'Language Integrated Query
             Dim groupedItems = loadItems.GroupBy(Function(x) x.MainMenu).ToDictionary(
-                Function(y) y.Key,
-                Function(y) y.GroupBy(Function(x) x.SubMenu).ToDictionary(
-                    Function(z) z.Key,
-                    Function(z) z.ToList()))
+                                                 Function(y) y.Key,
+                                                 Function(y) y.GroupBy(Function(x) x.SubMenu).ToDictionary(
+                                                 Function(z) z.Key,
+                                                 Function(z) z.ToList()))
 
             For Each mainMenuKey In groupedItems.Keys
                 Dim mainMenuItem As ToolStripMenuItem = Nothing
