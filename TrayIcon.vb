@@ -1,4 +1,10 @@
-﻿Imports System.Drawing
+﻿Imports System
+Imports System.Diagnostics
+Imports System.Threading.Tasks
+Imports System.Collections.Generic
+Imports System.Linq
+
+Imports System.Drawing
 Imports System.IO
 Imports System.Text
 Imports System.Windows.Forms
@@ -25,9 +31,10 @@ Namespace TrayIcon
 
             ReloadTrayMenu()
 
+            '.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath),
             _trayIcon = New NotifyIcon() With {
                 .ContextMenuStrip = _trayMenu,
-                .Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath),
+                .Icon = New Icon(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TrayIcon.ico")),
                 .Text = "Enjoy your day!",
                 .Visible = True
             }
