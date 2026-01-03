@@ -1,0 +1,12 @@
+@echo off
+"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\vbc.exe" ^
+/target:winexe ^
+/out:TrayIcon.exe ^
+/r:System.dll ^
+/r:System.Core.dll ^
+/r:System.Drawing.dll ^
+/r:System.Windows.Forms.dll ^
+/r:Microsoft.VisualBasic.dll ^
+/r:System.Threading.Tasks.dll ^
+/r:System.Linq.dll ^
+TrayIcon.vb NativeMethods.vb
